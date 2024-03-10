@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ExtendedUserEntity : Migration
+    public partial class ExtendedUserIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,7 +44,7 @@ namespace API.Data.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Interest",
+                name: "Interests",
                 table: "Users",
                 type: "TEXT",
                 nullable: true);
@@ -129,7 +129,7 @@ namespace API.Data.Migrations
                 table: "Users");
 
             migrationBuilder.DropColumn(
-                name: "Interest",
+                name: "Interests",
                 table: "Users");
 
             migrationBuilder.DropColumn(
