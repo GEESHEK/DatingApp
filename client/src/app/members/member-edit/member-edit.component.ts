@@ -14,11 +14,10 @@ import { MembersService } from 'src/app/_services/members.service';
 })
 export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editFrom: NgForm | undefined;
-  @HostListener('window:beforeunload') /*, ['$event']) unloadNotification($event: any) {
+  @HostListener('window:beforeunload')/* ['$event']) unloadNotification($event: any) {
     if(this.editFrom?.dirty) {
       $event.returnValue = true;
-    }
-  } */
+    }*/
   member: Member | undefined;
   user: User | null = null;
 
@@ -42,9 +41,11 @@ export class MemberEditComponent implements OnInit {
   }
 
   updateMember() {
-    console.log(this.member);
-    this.toastr.success('Profile updated successfully');
-    this.editFrom?.reset(this.member);
+    this.memberService.updateMember(this.editFrom?.value).subscribe({
+      next: _ => {
+        this.toastr.success('Profile updated successfully');
+        this.editFrom?.reset(this.member);
+      }
+    })
   }
-
 }
