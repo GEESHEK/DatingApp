@@ -11,7 +11,7 @@ export interface Member {
     gender: string
     introduction: string
     lookingFor: string
-    interest: string
+    interests: string
     city: string
     country: string
     photos: Photo[]
