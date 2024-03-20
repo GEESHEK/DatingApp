@@ -2,15 +2,37 @@
     <h2 class="text-center text-primary">Sign up</h2>
     <hr>
     <div class="mb-3">
-        <input type="text" class="form-control" formControlName="username" placeholder="Username">
-        <input type="password" class="form-control" formControlName="password" placeholder="Password">
-        <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirm Password">
+        <input type="text"
+            [class.is-invalid]="registerForm.get('username')?.errors && registerForm.get('username')?.touched"
+            class="form-control" formControlName="username" placeholder="Username">
+        <div class="invalid-feedback">
+            Please enter a username
+        </div>
+        <input type="password"
+            [class.is-invalid]="registerForm.get('password')?.errors && registerForm.get('password')?.touched"
+            class="form-control" formControlName="password" placeholder="Password">
+        <div class="invalid-feedback" *ngIf="registerForm.get('password')?.hasError('required')">
+            Please enter a password
+        </div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('password')?.hasError('minlength')">
+            Password must be at least 4 characters</div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('password')?.hasError('maxlength')">
+            Password must be at most 8 characters</div>
+        <input type="password"
+            [class.is-invalid]="registerForm.get('confirmPassword')?.errors && registerForm.get('confirmPassword')?.touched"
+            class="form-control" formControlName="confirmPassword" placeholder="Confirm Password">
+        <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.hasError('required')">
+            Please enter a confirmation password
+        </div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('confirmPassword')?.hasError('notMatching')">
+            Confrim password must match password
+        </div>
     </div>
     <div class="text-center">
         <button class="btn btn-success me-2" type="submit">Register</button>
         <button class="btn btn-default" type="button" (click)="cancel()">Cancel</button>
     </div>
 </form>
-<!-- <-- so we can see the output of the reactive form --> 
+<!-- <-- so we can see the output of the reactive form -->
 <p>Form value: {{registerForm.value | json}}</p>
 <p>Form status: {{registerForm.status | json}}</p>
