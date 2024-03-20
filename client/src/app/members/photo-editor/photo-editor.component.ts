@@ -2,8 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { take } from 'rxjs';
 import { Member } from 'src/app/_models/member';
+import { Photo } from 'src/app/_models/photo';
 import { User } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
+import { MembersService } from 'src/app/_services/members.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -19,7 +21,7 @@ export class PhotoEditorComponent implements OnInit {
   user: User | undefined;
 
   //get our user from account service
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private memberService: MembersService) {
     //take 1 with the pipe so the request completes without the need to unsubscibe 
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: user => {
@@ -35,6 +37,23 @@ export class PhotoEditorComponent implements OnInit {
   //drop zone functionality 
   fileOverBase(e: any) {
     this.hasBaseDropZoneOver = e;
+  }
+
+  setMainPhoto(photo: Photo) {
+    this.memberService.setMainPhoto(photo.id).subscribe({
+      next: () => {
+        if (this.user && this.member) {
+          this.user.photoUrl = photo.url;
+          //obserable will update all usages/components that's displaying that user's main photo
+          this.accountService.setCurrentUser(this.user);
+          this.member.photoUrl = photo.url;
+          this.member.photos.forEach(p => {
+            if(p.isMain) p.isMain = false;
+            if(p.id == photo.id) p.isMain = true;
+          })
+        }
+      }
+    })
   }
 
   //initalise the file uploader and add configs
