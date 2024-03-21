@@ -12,12 +12,15 @@ export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
   model: any = {}
   registerForm: FormGroup = new FormGroup({});
+  maxDate: Date = new Date();
 
   constructor(private accountService: AccountService, private toastr: ToastrService, 
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.initalizeForm();
+    //when passed this to our data picker, will only allow us to select up to a maximum date
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
   initalizeForm() {
