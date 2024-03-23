@@ -26,7 +26,7 @@ public class UsersController : BaseApiController
         _photoService = photoService;
     }
 
-    [HttpGet] // /api/users?pageNumber=1&pageSize=5
+    [HttpGet] // /api/users?pageNumber=1&pageSize=5 > query params
     public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
         var user = await _userRepository.GetMembersAsync(userParams);
@@ -37,7 +37,7 @@ public class UsersController : BaseApiController
         return Ok(user);
     }
 
-    [HttpGet("{username}")] // /api/users/name
+    [HttpGet("{username}")] // /api/users/name > path params
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
         return await _userRepository.GetMemberAsync(username);
