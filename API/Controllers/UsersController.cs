@@ -29,6 +29,16 @@ public class UsersController : BaseApiController
     [HttpGet] // /api/users?pageNumber=1&pageSize=5 > query params
     public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
+        //remove the user itself from being returned as a member list > used for filtering 
+        var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+        userParams.CurrentUsername = currentUser.UserName;
+        
+        //default return opposite gender
+        if (string.IsNullOrEmpty(userParams.Gender))
+        {
+            userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+        }
+        
         var user = await _userRepository.GetMembersAsync(userParams);
         //return the pagination information from the custom pagination header 
         Response.AddPaginationHeader(new PaginationHeader(user.CurrentPage, user.PageSize,
