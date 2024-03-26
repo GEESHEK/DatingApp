@@ -5,6 +5,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrModule } from 'ngx-toastr';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 
@@ -22,6 +23,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
       type: 'line-scale-party'
     }),
     FileUploadModule,
+    BsDatepickerModule.forRoot(),
     PaginationModule.forRoot()
   ],
   exports: [
@@ -30,7 +32,8 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     TabsModule,
     NgxSpinnerModule,
     FileUploadModule,
-    PaginationModule
+    PaginationModule,
+    BsDatepickerModule
   ]
 })
 export class SharedModule { }
