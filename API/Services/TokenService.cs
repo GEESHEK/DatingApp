@@ -21,7 +21,8 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.UserName)
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
         };
 
         //what we sign the token with and what algorithm to encrypt the key with

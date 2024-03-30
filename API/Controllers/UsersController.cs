@@ -3,6 +3,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -25,15 +26,28 @@ public class UsersController : BaseApiController
         _photoService = photoService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    [HttpGet] // /api/users?pageNumber=1&pageSize=5 > query params
+    public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
-        var user = await _userRepository.GetMembersAsync();
+        //remove the user itself from being returned as a member list > used for filtering 
+        var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+        userParams.CurrentUsername = currentUser.UserName;
+        
+        //default return opposite gender
+        if (string.IsNullOrEmpty(userParams.Gender))
+        {
+            userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+        }
+        
+        var user = await _userRepository.GetMembersAsync(userParams);
+        //return the pagination information from the custom pagination header 
+        Response.AddPaginationHeader(new PaginationHeader(user.CurrentPage, user.PageSize,
+            user.TotalCount,user.TotalPages));
 
         return Ok(user);
     }
 
-    [HttpGet("{username}")] // /api/users/name
+    [HttpGet("{username}")] // /api/users/name > path params
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
         return await _userRepository.GetMemberAsync(username);
