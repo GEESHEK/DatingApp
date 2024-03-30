@@ -12,10 +12,16 @@ import { UserParams } from '../_models/userParams';
 export class MembersService {
   baseUrl = environment.apiUrl;
   members: Member[] = [];
+  memberCache = new Map();
 
   constructor(private http: HttpClient) { }
 
   getMembers(UserParams: UserParams) {
+    //to check if this query has been made before with the key (these params) 
+    const response = this.memberCache.get(Object.values(UserParams).join('-'));
+    //result will be in response if key match
+    if(response) return of(response);
+
     //allows us to send up the query params
     let params = this.getPaginationHeaders(UserParams.pageNumber, UserParams.pageSize);
 
@@ -23,8 +29,13 @@ export class MembersService {
     params = params.append('maxAge', UserParams.maxAge);
     params = params.append('gender', UserParams.gender);
     params = params.append('orderBy', UserParams.orderBy);
-
-    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params);
+    //set result back in the member Cache
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params).pipe(
+      map(response => {       
+        this.memberCache.set(Object.values(UserParams).join('-'), response);
+        return response; //return results so component can use it
+      })
+    );
   }
 
   //making this method reusable with generics 
