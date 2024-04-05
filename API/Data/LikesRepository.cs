@@ -44,7 +44,7 @@ public class LikesRepository : ILikesRepository
             likes = likes.Where(like => like.TargetUserId == userId);
             users = likes.Select(like => like.SourceUser);
         }
-
+        //check predicate or else you just return all users
         return await users.Select(user => new LikeDto
         {
             UserName = user.UserName,
