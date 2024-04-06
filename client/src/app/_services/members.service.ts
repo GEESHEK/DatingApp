@@ -108,7 +108,7 @@ export class MembersService {
 
   //not setting up http params for this query string because we only need one
   getLikes(predicate: string) {
-    return this.http.get(this.baseUrl + 'likes?predicate=' + predicate);
+    return this.http.get<Member[]>(this.baseUrl + 'likes?predicate=' + predicate);
   }
 
   //making this method reusable with generics 
