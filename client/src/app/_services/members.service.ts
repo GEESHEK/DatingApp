@@ -39,7 +39,6 @@ export class MembersService {
 
   resetUserParams() {
     if (this.user) {
-      console.log("in reset filters");
       this.userParams = new UserParams(this.user);
       return this.userParams;
     }
