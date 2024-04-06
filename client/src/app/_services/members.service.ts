@@ -39,7 +39,6 @@ export class MembersService {
 
   resetUserParams() {
     if (this.user) {
-      console.log("in reset filters");
       this.userParams = new UserParams(this.user);
       return this.userParams;
     }
@@ -99,6 +98,20 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId)
+  }
+
+  //post but we are passing up empty object {}
+  addLike(username: string) { 
+    return this.http.post(this.baseUrl + 'likes/' + username, {})
+  }
+
+  //not setting up http params for this query string because we only need one
+  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeaders(pageNumber, pageSize);
+
+    params = params.append('predicate', predicate);
+
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
   }
 
   //making this method reusable with generics 
