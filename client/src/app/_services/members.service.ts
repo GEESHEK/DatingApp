@@ -107,8 +107,12 @@ export class MembersService {
   }
 
   //not setting up http params for this query string because we only need one
-  getLikes(predicate: string) {
-    return this.http.get<Member[]>(this.baseUrl + 'likes?predicate=' + predicate);
+  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+    let params = this.getPaginationHeaders(pageNumber, pageSize);
+
+    params = params.append('predicate', predicate);
+
+    return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
   }
 
   //making this method reusable with generics 
