@@ -47,7 +47,7 @@ export class MembersService {
 
 
   getMembers(UserParams: UserParams) {
-    //to check if this query has been made before with the key (these params) 
+    //to check if this query has been made before with the key (these params)
     const response = this.memberCache.get(Object.values(UserParams).join('-'));
     //result will be in response if key match
     if (response) return of(response);
@@ -76,7 +76,7 @@ export class MembersService {
     const member = [...this.memberCache.values()]
     .reduce((arr, elem) => arr.concat(elem.result), [])
     .find((member: Member) => member.userName === username);
-    
+
     if (member) return of(member);
 
     return this.http.get<Member>(this.baseUrl + 'users/' + username);
@@ -101,7 +101,7 @@ export class MembersService {
   }
 
   //post but we are passing up empty object {}
-  addLike(username: string) { 
+  addLike(username: string) {
     return this.http.post(this.baseUrl + 'likes/' + username, {})
   }
 
@@ -114,7 +114,7 @@ export class MembersService {
     return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
   }
 
-  //making this method reusable with generics 
+  //making this method reusable with generics
   private getPaginatedResult<T>(url: string, params: HttpParams) {
     const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>;
 
