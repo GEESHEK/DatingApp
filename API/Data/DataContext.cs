@@ -19,7 +19,7 @@ public class DataContext : DbContext
         base.OnModelCreating(builder);
         //specify how you want to configure the relationships
         builder.Entity<UserLike>()
-            //these are the primary keys
+            //these are the primary keys (composite primary key for uniqueness, can only like anther user once)
             .HasKey(k => new { k.SourceUserId, k.TargetUserId });
         
         builder.Entity<UserLike>()
@@ -34,15 +34,16 @@ public class DataContext : DbContext
             .HasForeignKey(s => s.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        //setting up messaging relationship 
+        //setting up messaging relationship (2 one to many relationship to create many to many)
+        //no composite primary key because we want to allow the user to send more than one message
         builder.Entity<Message>()
-            .HasOne(u => u.Recipient)
-            .WithMany(m => m.MessagesReceived)
+            .HasOne(m => m.Recipient)
+            .WithMany(u => u.MessagesReceived)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.Entity<Message>()
-            .HasOne(u => u.Sender)
-            .WithMany(m => m.MessagesSent)
+            .HasOne(m => m.Sender)
+            .WithMany(u => u.MessagesSent)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
