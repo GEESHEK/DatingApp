@@ -4,6 +4,7 @@ using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
@@ -17,7 +18,7 @@ public class MessageRepository : IMessageRepository
         _context = context;
         _mapper = mapper;
     }
-    
+
     public void AddMessage(Message message)
     {
         _context.Messages.Add(message);
@@ -39,7 +40,7 @@ public class MessageRepository : IMessageRepository
         var query = _context.Messages
             .OrderByDescending(x => x.MessageSent)
             .AsQueryable();
-        
+
         //switch for which container we are interested in
         query = messageParams.Container switch
         {
@@ -55,9 +56,37 @@ public class MessageRepository : IMessageRepository
             .CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
     }
 
-    public Task<IEnumerable<MessageDto>> GetMessageThread(int currentUserId, int recipientId)
+    public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
     {
-        throw new NotImplementedException();
+        var messages = await _context.Messages
+            .Include(u => u.Sender).ThenInclude(p => p.Photos)
+            .Include(u => u.Recipient).ThenInclude(p => p.Photos)
+            .Where(
+                m => m.RecipientUsername == currentUserName && 
+                     m.SenderUsername == recipientUserName ||
+                     m.RecipientUsername == recipientUserName && 
+                     m.SenderUsername == currentUserName
+            )
+            .OrderByDescending(m => m.MessageSent)
+            .ToListAsync();
+
+        //gets a list of unread messages
+        //e.g. Lisa(user) sees the thread then the message that Todd(sender) send to Lisa(Recipient) only will be marked with dateRead 
+        var unreadMessages = messages.Where(m => m.DateRead == null 
+                                                 && m.RecipientUsername == currentUserName).ToList();
+
+        //marks messages read as soon as they are received by the recipient 
+        if (unreadMessages.Any())
+        {
+            foreach (var message in unreadMessages)
+            {
+                message.DateRead = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        return _mapper.Map<IEnumerable<MessageDto>>(messages);
     }
 
     public async Task<bool> SaveAllAsync()
