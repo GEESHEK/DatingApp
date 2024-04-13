@@ -10,9 +10,10 @@ import { MessageService } from '../_services/message.service';
 })
 export class MessagesComponent implements OnInit {
   //can use undefined or ? optional here
+  //better to use undefined, ? causes more problems and needs more checks in the html
   messages?: Message[];
   pagination?: Pagination;
-  container = 'Outbox';
+  container = 'Unread';
   pageNumber = 1;
   pageSize = 5;
 
