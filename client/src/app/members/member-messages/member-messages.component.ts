@@ -12,22 +12,15 @@ import { MessageService } from 'src/app/_services/message.service';
   imports: [CommonModule, TimeagoModule]
 })
 export class MemberMessagesComponent implements OnInit {
-  //child, get username from parent with Input
+  //child, get username&messages from parent with Input
   @Input() username?: string;
-  messages: Message[] = [];
+  @Input() messages: Message[] = [];
 
-  constructor(private messageService: MessageService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.loadMessages();
   }
 
-  loadMessages() {
-    if(this.username) {
-      this.messageService.getMessageThread(this.username).subscribe({
-        next: messages => this.messages = messages
-      })
-    }
-  }
+
 
 }
