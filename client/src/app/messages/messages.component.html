@@ -45,12 +45,14 @@
             </tr>
         </thead>
         <tbody class="align-middle">
-            <!--routerLink allows us to go the profile 
-                of the user when we click on the message-->
+            <!--routerLink allows us to go to the profile 
+                of the user when we click on the message. 
+            With queryParams it will take us to the message tab within profile
+            This will be the transformed url with queryParams https://localhost:4200/members/todd?tab=Messages -->
             <tr *ngFor="let message of messages"
                 routerLink="{{container === 'Outbox' 
                 ? '/members/' + message.recipientUsername 
-                : '/members/' + message.senderUsername}}"
+                : '/members/' + message.senderUsername}}" [queryParams]="{tab: 'Messages'}"
             >
                 <td>{{message.content}}</td>
                 <td>
