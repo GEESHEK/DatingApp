@@ -26,4 +26,8 @@ export class MessageService {
     //recipientUsername match with message DTO, content is fine > called the same
     return this.http.post<Message>(this.baseUrl + 'messages', {recipientUsername: username, content})
   }
+
+  deleteMessage(id: number) {
+    return this.http.delete(this.baseUrl + 'messages/' + id);
+  }
 }
