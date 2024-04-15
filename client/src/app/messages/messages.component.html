@@ -49,7 +49,7 @@
                 of the user when we click on the message. 
             With queryParams it will take us to the message tab within profile
             This will be the transformed url with queryParams https://localhost:4200/members/todd?tab=Messages -->
-            <tr *ngFor="let message of messages"
+            <tr [hidden]="loading" *ngFor="let message of messages"
                 routerLink="{{container === 'Outbox' 
                 ? '/members/' + message.recipientUsername 
                 : '/members/' + message.senderUsername}}" [queryParams]="{tab: 'Messages'}"
@@ -80,7 +80,7 @@
     </table>
 </div>
 
-<div class="d-flex justify-content-center" *ngIf="pagination && messages && messages.length > 0">
+<div class="d-flex justify-content-center" *ngIf="!loading && pagination && messages && messages.length > 0">
     <pagination 
     [boundaryLinks]="true" 
     [totalItems]="pagination.totalItems"
