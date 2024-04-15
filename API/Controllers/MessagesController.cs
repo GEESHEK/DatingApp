@@ -77,4 +77,30 @@ public class MessagesController : BaseApiController
 
         return Ok(await _messageRepository.GetMessageThread(currentUsername, username));
     }
+
+    //delete only if both users have deleted that specific message.
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteMessage(int id)
+    {
+        var username = User.GetUsername();
+
+        var message = await _messageRepository.GetMessage(id);
+        //only sender or recipient can delete the messages
+        if (message.SenderUsername != username && message.RecipientUsername != username) 
+                return Unauthorized();
+
+        if (message.SenderUsername == username) message.SenderDeleted = true;
+        if (message.RecipientUsername == username) message.RecipientDeleted = true;
+        
+        //if both delete then remove from db
+        if (message.SenderDeleted && message.RecipientDeleted)
+        {
+            _messageRepository.DeleteMessage(message);
+        }
+
+        if (await _messageRepository.SaveAllAsync()) return Ok();
+
+        return BadRequest("Problem deleting the message");
+    }
+    
 }
