@@ -21,4 +21,9 @@ export class MessageService {
   getMessageThread(username: string) {
     return this.http.get<Message[]>(this.baseUrl + 'messages/thread/' + username)
   }
+
+  sendMessage(username: string, content: string) {
+    //recipientUsername match with message DTO, content is fine > called the same
+    return this.http.post<Message>(this.baseUrl + 'messages', {recipientUsername: username, content})
+  }
 }
