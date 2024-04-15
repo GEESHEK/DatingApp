@@ -19,7 +19,8 @@ import { Message } from 'src/app/_models/message';
 })
 export class MemberDetailComponent implements OnInit {
   @ViewChild('memberTabs', {static: true}) memberTabs?: TabsetComponent;
-  member: Member | undefined;
+  //initializes member with empty object but should be populated by the member-detailed route resolver.
+  member: Member = {} as Member;
   images: GalleryItem[] = [];
   activeTab?: TabDirective;
   messages: Message[] = [];
@@ -29,13 +30,19 @@ export class MemberDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadMember();
+    this.route.data.subscribe({
+      //member is what we called it inside the app routing module
+      next: data => this.member = data['member']
+    })
+
 
     this.route.queryParams.subscribe({
       next: params => {
         params['tab'] && this.selectTab(params['tab'])
       }
     })
+
+    this.getImages();
   }
 
   selectTab(heading: string) {
@@ -65,17 +72,17 @@ export class MemberDetailComponent implements OnInit {
     }
   }
 
-  loadMember() {
-    const username = this.route.snapshot.paramMap.get('username');
-    if (!username) return;
+  // loadMember() {
+  //   const username = this.route.snapshot.paramMap.get('username');
+  //   if (!username) return;
 
-    this.memberService.getMember(username).subscribe({
-      next: member => {
-        this.member = member,
-          this.getImages()
-      }
-    })
-  }
+  //   this.memberService.getMember(username).subscribe({
+  //     next: member => {
+  //       this.member = member,
+  //         this.getImages()
+  //     }
+  //   })
+  // }
 
   getImages() {
     if (!this.member) return;
