@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +19,7 @@ public class Seed
         //generate passwords
         foreach (var user in users)
         {
-            using var hmac = new HMACSHA512();
-
             user.UserName = user.UserName.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
-            user.PasswordSalt = hmac.Key;
 
             context.Users.Add(user);
         }

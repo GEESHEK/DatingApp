@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using API.Data;
+﻿using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
@@ -29,12 +27,8 @@ public class AccountController : BaseApiController
         if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
 
         var user = _mapper.Map<AppUser>(registerDto);
-
-        using var hmac = new HMACSHA512();
         
         user.UserName = registerDto.Username.ToLower();
-        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-        user.PasswordSalt = hmac.Key;
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -56,15 +50,6 @@ public class AccountController : BaseApiController
             .SingleOrDefaultAsync(x => x.UserName == loginDto.Username);
 
         if (user == null) return Unauthorized("invalid username");
-
-        using var hmac = new HMACSHA512(user.PasswordSalt);
-
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-        for (int i = 0; i < computedHash.Length; i++)
-        {
-            if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("invalid password");
-        }
 
         return new UserDto
         {
