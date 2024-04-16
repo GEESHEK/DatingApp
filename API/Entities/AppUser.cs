@@ -25,4 +25,7 @@ public class AppUser
     //many to many relationship > join table between them
     // public List<AppUser> LikedByUsers { get; set; }
     // public List<AppUser> LikedUsers { get; set; }
+
+    public List<Message> MessagesSent { get; set; }
+    public List<Message> MessagesReceived { get; set; }
 }
