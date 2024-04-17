@@ -31,7 +31,7 @@ try
     var context = services.GetRequiredService<DataContext>();
     //reseeds the database and creates it if it doesn't exist > we can drop db to reset it
     await context.Database.MigrateAsync();
-    await Seed.SeedUser(context);
+    // await Seed.SeedUser(context);
 }
 catch (Exception ex)
 {
