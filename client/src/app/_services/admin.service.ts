@@ -14,4 +14,11 @@ export class AdminService {
   getUsersWithRoles() {
     return this.http.get<User[]>(this.baseUrl + 'admin/users-with-roles');
   }
+
+  updateUserRoles(username: string, roles: string[]) {
+    //pass up empty object for put or
+    console.log("here are my roles " + roles);
+    return this.http.put<string[]>(this.baseUrl + 'admin/edit-roles/' 
+    + username + '?roles=' + roles, {});
+  }
 }
