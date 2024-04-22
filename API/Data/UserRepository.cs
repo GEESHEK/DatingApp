@@ -62,7 +62,7 @@ public class UserRepository : IUserRepository
         //storing DOB > workout min DOB and max DOB
         //1920 is lower than 1980 i.e. older and maxDob is youngest i.e. higher DOB
         var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
-        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge - 1));
+        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
 
         query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
         //order results
