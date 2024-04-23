@@ -20,7 +20,7 @@ public static class IdentityServiceExtensions
             .AddRoleManager<RoleManager<AppRole>>()
             //this creates all the tables related to identity in our db
             .AddEntityFrameworkStores<DataContext>();
-        
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -33,8 +33,30 @@ public static class IdentityServiceExtensions
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                //authentication for signalR which doesn't use HTTP request so no access to HTTP headers
+                //uses web sockets
+                options.Events = new JwtBearerEvents
+                {
+                    //can't pass bearer token up as a header > pass as query string
+                    OnMessageReceived = context =>
+                    {
+                        //"access_token" is what signalR from the client side is going to use when it sends up the token
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        //hubs is the first part of the mapHub in the program class
+                        //if we are on that path and have the access token
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            //gives signalR hub access to our bearer token because we are adding it to the context
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
-        
+
         //adding policies 
         services.AddAuthorization(opt =>
         {
