@@ -56,4 +56,16 @@ public class PresenceTracker
 
         return Task.FromResult(onlineUsers);
     }
+
+    public static Task<List<string>> GetConnectionsForUser(string username)
+    {
+        List<string> connectionIds;
+        //scale problem > use db if you don't have Redis
+        lock (OnlineUsers)
+        {
+            connectionIds = OnlineUsers.GetValueOrDefault(username);
+        }
+
+        return Task.FromResult(connectionIds);
+    }
 }

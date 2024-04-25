@@ -14,13 +14,15 @@ public class MessageHub : Hub
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly IHubContext<PresenceHub> _presenceHub;
 
     public MessageHub(IMessageRepository messageRepository, IUserRepository userRepository, 
-        IMapper mapper)
+        IMapper mapper, IHubContext<PresenceHub> presenceHub)
     {
         _messageRepository = messageRepository;
         _userRepository = userRepository;
         _mapper = mapper;
+        _presenceHub = presenceHub;
     }
 
     //Get the name of the user we are connected to > send it up in the query string and retrieve from the http request
@@ -82,9 +84,21 @@ public class MessageHub : Hub
         var group = await _messageRepository.GetMessageGroup(groupName);
 
         //check our connection to see if there is any username that matches the recipient username
+        //checking to see if user is in that message group(message group has that connection)
         if (group.Connections.Any(x => x.Username == recipient.UserName))
         {
             message.DateRead = DateTime.UtcNow;
+        }
+        else
+        {
+            var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
+            //not null then we know user is logged in just not in message tab(connected to message hub)
+            if (connections != null)
+            {
+                //we are using our presence hub to send this to the client
+                await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
+                    new {username = sender.UserName, knownAs = sender.KnownAs});
+            }
         }
         
         //use the context .add to track it
