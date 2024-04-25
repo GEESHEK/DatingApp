@@ -7,8 +7,9 @@ public class PresenceTracker
         new Dictionary<string, List<string>>();
     
     //dictionaries aren't thread safe, use lock
-    public Task UserConnected(string username, string connectionId)
+    public Task<bool> UserConnected(string username, string connectionId)
     {
+        bool isOnline = false;
         //users have to wait for their turn to be added to this
         lock (OnlineUsers)
         {
@@ -20,27 +21,31 @@ public class PresenceTracker
             else
             {
                 OnlineUsers.Add(username, new List<string>{connectionId});
+                isOnline = true;
             }
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(isOnline);
     }
 
-    public Task UserDisconnected(string username, string connectionId)
+    public Task<bool> UserDisconnected(string username, string connectionId)
     {
+        bool isOffline = false;
+        
         lock (OnlineUsers)
         {
-            if (!OnlineUsers.ContainsKey(username)) return Task.CompletedTask;
+            if (!OnlineUsers.ContainsKey(username)) return Task.FromResult(isOffline);
 
             OnlineUsers[username].Remove(connectionId);
 
             if (OnlineUsers[username].Count == 0)
             {
                 OnlineUsers.Remove(username);
+                isOffline = true;
             }
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(isOffline);
     }
     
     //method to return who is online
