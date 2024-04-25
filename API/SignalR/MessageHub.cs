@@ -36,7 +36,7 @@ public class MessageHub : Hub
             .GetMessageThread(Context.User.GetUsername(), otherUser);
 
         //users will receive messages from SignalR Instead of making an API call (which requires refreshing browser)
-        await Clients.Groups(groupName).SendAsync("ReceiveMessageThread");
+        await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
     }
 
     //When a user disconnects from signalR they move to a different part of our application.
