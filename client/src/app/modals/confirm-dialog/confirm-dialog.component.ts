@@ -16,7 +16,6 @@ export class ConfirmDialogComponent implements OnInit {
   constructor(public bsModalRef: BsModalRef) { }
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
   }
 
   confirm() {
