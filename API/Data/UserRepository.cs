@@ -24,11 +24,6 @@ public class UserRepository : IUserRepository
         _context.Entry(user).State = EntityState.Modified;
     }
 
-    public async Task<bool> SaveAllAsync()
-    {
-        return await _context.SaveChangesAsync() > 0; //returns how many changes made to the db.
-    }
-
     public async Task<IEnumerable<AppUser>> GetUsersAsync()
     {
         return await _context.Users.Include(p => p.Photos)
@@ -49,10 +44,6 @@ public class UserRepository : IUserRepository
 
     public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
-        // var query = _context.Users
-        //     .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-        //     .AsNoTracking();
-        
         //building up the query below to filter current user out and opposite gender if not selected
         var query = _context.Users.AsQueryable();
         

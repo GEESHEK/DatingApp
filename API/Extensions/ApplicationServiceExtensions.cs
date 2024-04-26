@@ -17,16 +17,15 @@ public static class ApplicationServiceExtensions
         });
         services.AddCors();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddScoped<LogUserActivity>();
-        services.AddScoped<ILikesRepository, LikesRepository>();
-        services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddSignalR();
-        //Us Singleton > don't want this destroyed once an HTTP request has been completed
+        //Use Singleton > don't want this destroyed once an HTTP request has been completed
         services.AddSingleton<PresenceTracker>();
+        //replace all repos with the unit of work repo
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
