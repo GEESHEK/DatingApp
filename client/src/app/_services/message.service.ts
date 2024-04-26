@@ -37,7 +37,9 @@ export class MessageService {
         this.messageThreadSource.next(messages);
     })
 
+    //when a user joins the message hub we will mark the messages as read
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
+      //check if there is any unread messages and mark as read
       if (group.connections.some(x => x.username === otherUsername)) {
         this.messageThread$.pipe(take(1)).subscribe({
           next: messages => {
