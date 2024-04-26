@@ -85,8 +85,7 @@ public class MessageRepository : IMessageRepository
             {
                 message.DateRead = DateTime.UtcNow;
             }
-
-            await _context.SaveChangesAsync();
+            //the save changes async method(complete method) has been moved to the message hub when retrieving the thread
         }
 
         return _mapper.Map<IEnumerable<MessageDto>>(messages);
