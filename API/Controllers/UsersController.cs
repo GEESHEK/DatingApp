@@ -27,13 +27,13 @@ public class UsersController : BaseApiController
     public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
         //remove the user itself from being returned as a member list > used for filtering 
-        var currentUser = await _uow.UserRepository.GetUserByUsernameAsync(User.GetUsername());
-        userParams.CurrentUsername = currentUser.UserName;
+        var gender = await _uow.UserRepository.GetUserGender(User.GetUsername());
+        userParams.CurrentUsername = User.GetUsername();
         
         //default return opposite gender
         if (string.IsNullOrEmpty(userParams.Gender))
         {
-            userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            userParams.Gender = gender == "male" ? "female" : "male";
         }
         
         var user = await _uow.UserRepository.GetMembersAsync(userParams);
