@@ -44,12 +44,12 @@ public class MessageRepository : IMessageRepository
         //switch for which container we are interested in
         query = messageParams.Container switch
         {
-            "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username 
+            "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username
                                         && u.RecipientDeleted == false),
-            "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username 
+            "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username
                                          && u.SenderDeleted == false),
-            _ => query.Where(u => u.RecipientUsername == messageParams.Username && u.RecipientDeleted == false 
-                                        && u.DateRead == null)
+            _ => query.Where(u => u.RecipientUsername == messageParams.Username && u.RecipientDeleted == false
+                && u.DateRead == null)
         };
 
         //project the message to MessageDto and return it as a PagedList
@@ -61,9 +61,7 @@ public class MessageRepository : IMessageRepository
 
     public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName)
     {
-        var messages = await _context.Messages
-            .Include(u => u.Sender).ThenInclude(p => p.Photos)
-            .Include(u => u.Recipient).ThenInclude(p => p.Photos)
+        var query = _context.Messages
             .Where(
                 m => m.RecipientUsername == currentUserName && m.RecipientDeleted == false &&
                      m.SenderUsername == recipientUserName ||
@@ -71,12 +69,12 @@ public class MessageRepository : IMessageRepository
                      m.SenderUsername == currentUserName
             )
             .OrderBy(m => m.MessageSent)
-            .ToListAsync();
+            .AsQueryable();
 
         //gets a list of unread messages
         //e.g. Lisa(user) sees the thread then the message that Todd(sender) send to Lisa(Recipient) only will be marked with dateRead 
-        var unreadMessages = messages.Where(m => m.DateRead == null 
-                                                 && m.RecipientUsername == currentUserName).ToList();
+        var unreadMessages = query.Where(m => m.DateRead == null
+                                              && m.RecipientUsername == currentUserName).ToList();
 
         //marks messages read as soon as they are received by the recipient 
         if (unreadMessages.Any())
@@ -88,7 +86,7 @@ public class MessageRepository : IMessageRepository
             //the save changes async method(complete method) has been moved to the message hub when retrieving the thread
         }
 
-        return _mapper.Map<IEnumerable<MessageDto>>(messages);
+        return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
     }
 
     public void AddGroup(Group group)
