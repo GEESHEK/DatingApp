@@ -30,6 +30,11 @@ app.UseCors(corsPolicyBuilder =>
 app.UseAuthentication();
 app.UseAuthorization();
 
+//this will retrieve and serve the index.html from our wwwroot folder which is used by default
+app.UseDefaultFiles();
+//serves the content in the wwwroot
+app.UseStaticFiles();
+
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
