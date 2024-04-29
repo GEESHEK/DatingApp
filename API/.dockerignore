@@ -1,0 +1,4 @@
+#don't need to copy these files
+#created from the dotnet resotre and dotnet publish commands
+**/bin
+**/obj
