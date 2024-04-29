@@ -50,8 +50,8 @@ try
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     //reseeds the database and creates it if it doesn't exist > we can drop db to reset it
     await context.Database.MigrateAsync();
-    //clear out the connections table on restart or crashes etc >> SQL lite doesn't have Truncate method
-    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    //clear out the connections table on restart or crashes etc.
+    await Seed.ClearConnections(context);
     await Seed.SeedUser(userManager, roleManager);
 }
 catch (Exception ex)
