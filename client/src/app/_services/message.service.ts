@@ -7,6 +7,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Group } from '../_models/group';
+import { BusyService } from './busy.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +19,12 @@ export class MessageService {
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
-  constructor(private http: HttpClient) { }
+  //inject the busy service because SignalR does not use Http
+  constructor(private http: HttpClient, private busyService: BusyService) { }
 
   //get the other member name from the member details component using the root parameter
   createHubConnection(user: User, otherUsername: string) {
+    this.busyService.busy();
     this.hubConnection = new HubConnectionBuilder()
       //route comes from the program class on the API
       .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
@@ -31,7 +34,9 @@ export class MessageService {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start().catch(error => console.log(error));
+    this.hubConnection.start()
+      .catch(error => console.log(error))
+      .finally(() => this.busyService.idle());
 
     this.hubConnection.on('ReceiveMessageThread', messages => {
         this.messageThreadSource.next(messages);
@@ -69,6 +74,8 @@ export class MessageService {
 
   stopHubConnection() {
     if (this.hubConnection) {
+      //make sure previous message doesn't get loaded into another message tab
+      this.messageThreadSource.next([]);
       this.hubConnection.stop();
     }
   }
