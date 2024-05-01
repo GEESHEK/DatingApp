@@ -1,5 +1,7 @@
 # Dating App: Build an app with ASPNET Core and Angular from scratch udemy course
 
+<img src="AppPhotosForReadME/MemberPage.png">
+
 - Learn how to build a web application from start to publishing using ASPNET Core, Entity Framework Core and Angular
 - Learn how to integrate 3rd party components into the Angular application
 - Using Automapper in ASP.NET Core
