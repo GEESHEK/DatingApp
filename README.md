@@ -16,3 +16,8 @@
 - Persist data using Entity Framework Core
 - Using SignalR for real time presence and live messaging between users
 - Dockerising application
+
+<img src="AppPhotosForReadME/MainPage.png">
+<img src="AppPhotosForReadME/RegisterPage.png">
+<img src="AppPhotosForReadME/MessagePage.png">
+<img src="AppPhotosForReadME/AdminPage.png">
