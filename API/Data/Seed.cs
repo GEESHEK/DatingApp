@@ -7,6 +7,12 @@ namespace API.Data;
 
 public class Seed
 {
+    public static async Task ClearConnections(DataContext context)
+    {
+        context.Connections.RemoveRange(context.Connections);
+        await context.SaveChangesAsync();
+    }
+    
     public static async Task SeedUser(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
         //check if our db has data in it, don't seed if we already do
@@ -35,6 +41,9 @@ public class Seed
         foreach (var user in users)
         {
             user.UserName = user.UserName.ToLower();
+            //UTC is need for postgres to work
+            user.Created = DateTime.SpecifyKind(user.Created, DateTimeKind.Utc);
+            user.LastActive = DateTime.SpecifyKind(user.LastActive, DateTimeKind.Utc);
             //this will create and save in db
             await userManager.CreateAsync(user, "Pa$$w0rd");
             await userManager.AddToRoleAsync(user, "Member");

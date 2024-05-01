@@ -30,9 +30,15 @@ app.UseCors(corsPolicyBuilder =>
 app.UseAuthentication();
 app.UseAuthorization();
 
+//this will retrieve and serve the index.html from our wwwroot folder which is used by default
+app.UseDefaultFiles();
+//serves the content in the wwwroot
+app.UseStaticFiles();
+
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
+app.MapFallbackToController("Index", "FallBack");
 
 //gives us access to all the services inside this program class
 using var scope = app.Services.CreateScope();
@@ -44,8 +50,8 @@ try
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     //reseeds the database and creates it if it doesn't exist > we can drop db to reset it
     await context.Database.MigrateAsync();
-    //clear out the connections table on restart or crashes etc >> SQL lite doesn't have Truncate method
-    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    //clear out the connections table on restart or crashes etc.
+    await Seed.ClearConnections(context);
     await Seed.SeedUser(userManager, roleManager);
 }
 catch (Exception ex)
